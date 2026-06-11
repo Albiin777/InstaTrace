@@ -1,0 +1,6 @@
+{
+  "name": "InstaTrace",
+  "description": "Privacy-first Instagram export analyzer that processes your data locally in your browser. No login, no servers, 100% private.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+/* Custom premium transitions and keyframes for client-side interactivity */
+.animate-fade-in {
+  animation: fadeInKey 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-up {
+  animation: slideUpKey 0.36s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeInKey {
+  from {
+    opacity: 0;
+    transform: scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUpKey {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* Custom hover animations for button items */
+button, select, input {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Soft pulse highlight rings for the flagship Don't Follow Back module */
+.pulse-ring {
+  box-shadow: 0 0 0 0 rgba(221, 42, 123, 0.4);
+  animation: pulseKey 2s infinite;
+}
+
+@keyframes pulseKey {
+  0% {
+    box-shadow: 0 0 0 0 rgba(221, 42, 123, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(221, 42, 123, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(221, 42, 123, 0);
+  }
+}
