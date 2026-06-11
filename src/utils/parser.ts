@@ -155,10 +155,6 @@ export async function parseInstagramZip(file: File): Promise<ParsedExport> {
 
   const allPaths = Object.keys(zip.files);
 
-  // Log all found paths for debug
-  console.group('[InstaTrace] ZIP contents:');
-  allPaths.forEach(p => console.log(zip.files[p].dir ? `[DIR] ${p}` : `[FILE] ${p}`));
-  console.groupEnd();
 
   for (const path of allPaths) {
     const fileEntry = zip.files[path];
@@ -196,23 +192,6 @@ export async function parseInstagramZip(file: File): Promise<ParsedExport> {
       }
 
       const extracted = extractUsersFromJson(json);
-      console.log(`[InstaTrace] ${isFollowerFile ? 'FOLLOWERS' : 'FOLLOWING'} "${path}" → ${extracted.length} users`);
-
-      if (extracted.length === 0) {
-        // Log a sample of the raw JSON so we can debug the actual format
-        const sample = JSON.stringify(json).slice(0, 600);
-        console.warn(`[InstaTrace] ⚠️ 0 users extracted from "${path}". Raw JSON sample:\n${sample}`);
-        // Also log the keys at the top level
-        if (typeof json === 'object' && !Array.isArray(json)) {
-          console.warn(`[InstaTrace] Top-level keys:`, Object.keys(json));
-          const firstKey = Object.keys(json)[0];
-          if (firstKey && Array.isArray(json[firstKey]) && json[firstKey].length > 0) {
-            console.warn(`[InstaTrace] First entry under "${firstKey}":`, JSON.stringify(json[firstKey][0]));
-          }
-        } else if (Array.isArray(json) && json.length > 0) {
-          console.warn(`[InstaTrace] First array entry:`, JSON.stringify(json[0]));
-        }
-      }
 
       if (isFollowerFile) {
         followers = followers.concat(extracted);
@@ -224,14 +203,9 @@ export async function parseInstagramZip(file: File): Promise<ParsedExport> {
     }
   }
 
-
-  console.log(`[InstaTrace] Total raw — followers: ${followers.length}, following: ${following.length}`);
-
   // Deduplicate by username
   const uniqueFollowers = Array.from(new Map(followers.map(u => [u.username, u])).values());
   const uniqueFollowing = Array.from(new Map(following.map(u => [u.username, u])).values());
-
-  console.log(`[InstaTrace] After dedup — followers: ${uniqueFollowers.length}, following: ${uniqueFollowing.length}`);
 
   // Derive stats
   const followerSet = new Set(uniqueFollowers.map(u => u.username));
@@ -312,138 +286,93 @@ export function convertToCSV(users: InstagramUser[], title: string): string {
 }
 
 /**
- * GENERATE HIGH-FIDELITY MOCK EXPORTS
- * This matches the exact numbers:
- * Followers: 1,245
- * Following: 876
- * Mutuals: 654
- * Don't Follow Back: 222
- * Fans: 580
+ * Small handcrafted dummy datasets — two snapshots to demo all features.
+ *
+ * May snapshot (15 accounts):
+ *   Followers : 10  |  Following : 8
+ *   Mutuals   : 6   |  Don't Follow Back : 2  |  Fans : 4
+ *
+ * June snapshot (15 accounts, slight changes to power the Compare view):
+ *   Followers : 11  |  Following : 9
+ *   New follower: nova_pixel  |  Lost follower: pixel_craft
+ *   New following: sunny_dev  |  Unfollowed: bright_lens
  */
+
+// Helper: build an InstagramUser in one line
+function u(username: string, daysAgo: number, baseTime: number): InstagramUser {
+  const ts = baseTime - daysAgo * 86400;
+  return { username, href: `https://www.instagram.com/${username}`, timestamp: ts, dateString: formatDate(ts) };
+}
+
 export function generateMockExport(type: 'may' | 'june'): ParsedExport {
   const isMay = type === 'may';
-  const fileName = isMay ? 'may_export.zip' : 'june_export.zip';
-  const exportedAt = isMay ? 'May 15, 2025, 1:45 PM' : 'June 1, 2025, 2:20 PM';
-  const baseTime = isMay ? 1747316700 : 1748787600; // May 15 2025, or June 1 2025
+  const fileName   = isMay ? 'may_export.zip'  : 'june_export.zip';
+  const exportedAt = isMay ? 'May 15, 2025, 1:45 PM' : 'Jun 1, 2025, 2:20 PM';
+  const base       = isMay ? 1747316700 : 1748787600;
 
-  // Deterministically generate accounts
-  const followersCount = isMay ? 1245 : 1279; // +34 followers
-  const followingCount = isMay ? 876 : 898;  // +22 followed, or custom diff
+  // ── Followers ──────────────────────────────────────────────────
+  // Mutuals (follow each other) — 6 shared accounts
+  const mutualUsers = [
+    u('cosmic_jay',    1, base),
+    u('loop_theory',   3, base),
+    u('wave_studio',   5, base),
+    u('dusk_frames',   7, base),
+    u('neon_arc',     10, base),
+    u('byte_bloom',   14, base),
+  ];
 
-  const mutualsCount = isMay ? 654 : 670;
-  const dfbCount = isMay ? 222 : 228; // Don't follow back
-  const fansCount = isMay ? 580 : 595;
+  // Fans (they follow you, you don't follow them) — 4 accounts
+  const fanUsers = isMay
+    ? [
+        u('pixel_craft',  2, base),
+        u('solar_grid',   6, base),
+        u('blur_motion',  9, base),
+        u('echo_valley', 13, base),
+      ]
+    : [
+        // pixel_craft left; nova_pixel joined
+        u('solar_grid',   6, base),
+        u('blur_motion',  9, base),
+        u('echo_valley', 13, base),
+        u('nova_pixel',   1, base),
+      ];
 
-  const followers: InstagramUser[] = [];
-  const following: InstagramUser[] = [];
+  // ── Following ──────────────────────────────────────────────────
+  // Don't Follow Back (you follow them, they don't follow you) — 2 accounts
+  const dfbUsers = isMay
+    ? [
+        u('bright_lens',  4, base),
+        u('grid_tales',  11, base),
+      ]
+    : [
+        // bright_lens unfollowed; sunny_dev followed
+        u('grid_tales',  11, base),
+        u('sunny_dev',    2, base),
+      ];
 
-  // Generate Mutuals
-  for (let i = 0; i < mutualsCount; i++) {
-    const username = getMockUsername('mutual', i);
-    const timestamp = baseTime - i * 3600 * 2.5; // hourly gaps
-    const user: InstagramUser = {
-      username,
-      href: `https://www.instagram.com/${username}`,
-      timestamp,
-      dateString: formatDate(timestamp),
-    };
-    followers.push(user);
-    following.push(user);
-  }
+  const followers = [...mutualUsers, ...fanUsers];
+  const following = [...mutualUsers, ...dfbUsers];
 
-  // Generate Don't Follow Back (We follow them, they don't follow us)
-  for (let i = 0; i < dfbCount; i++) {
-    const username = getMockUsername('dfb', i);
-    const timestamp = baseTime - i * 3600 * 3.7;
-    const user: InstagramUser = {
-      username,
-      href: `https://www.instagram.com/${username}`,
-      timestamp,
-      dateString: formatDate(timestamp),
-    };
-    following.push(user);
-  }
+  const followerSet  = new Set(followers.map(x => x.username));
+  const followingSet = new Set(following.map(x => x.username));
 
-  // Generate Fans (They follow us, we don't follow them)
-  for (let i = 0; i < fansCount; i++) {
-    const username = getMockUsername('fan', i);
-    const timestamp = baseTime - i * 3600 * 1.9;
-    const user: InstagramUser = {
-      username,
-      href: `https://www.instagram.com/${username}`,
-      timestamp,
-      dateString: formatDate(timestamp),
-    };
-    followers.push(user);
-  }
+  const mutuals       = following.filter(x => followerSet.has(x.username));
+  const dontFollowBack = following.filter(x => !followerSet.has(x.username));
+  const fans          = followers.filter(x => !followingSet.has(x.username));
 
-  // Inject beautiful concrete users in top records to match UI screenshot
-  // albin_thomas, john_doe, sarah_jonas, rachel_miller, david_lee
-  const specialUsers = {
-    albin_thomas: { username: 'albin_thomas', href: 'https://www.instagram.com/albin_thomas', timestamp: baseTime - 7200, dateString: formatDate(baseTime - 7200) }, // 2h ago
-    john_doe: { username: 'john_doe', href: 'https://www.instagram.com/john_doe', timestamp: baseTime - 86400, dateString: formatDate(baseTime - 86400) }, // 1d ago
-    sarah_jonas: { username: 'sarah_jonas', href: 'https://www.instagram.com/sarah_jonas', timestamp: baseTime - 172800, dateString: formatDate(baseTime - 172800) }, // 2d ago
-    rachel_miller: { username: 'rachel_miller', href: 'https://www.instagram.com/rachel_miller', timestamp: baseTime - 259200, dateString: formatDate(baseTime - 259200) }, // 3d ago
-    david_lee: { username: 'david_lee', href: 'https://www.instagram.com/david_lee', timestamp: baseTime - 345600, dateString: formatDate(baseTime - 345600) }, // 4d ago
-  };
-
-  // Ensure they are placed at the beginning of followers & following lists where relevant
-  // - albin_thomas, john_doe, david_lee are starting following you
-  // - sarah_jonas is followed by you
-  // Let's place them appropriately:
-  followers.unshift(specialUsers.albin_thomas, specialUsers.john_doe, specialUsers.david_lee);
-  following.unshift(specialUsers.sarah_jonas);
-
-  // Define mutuals/fans/dfb lists correctly
-  const followerSet = new Set(followers.map(u => u.username));
-  const followingSet = new Set(following.map(u => u.username));
-
-  const mutuals = following.filter(u => followerSet.has(u.username));
-  const dontFollowBack = following.filter(u => !followerSet.has(u.username));
-  const fans = followers.filter(u => !followingSet.has(u.username));
-
-  // Build key Activities
+  // ── Recent Activity ────────────────────────────────────────────
   const recentActivity: ActivityItem[] = [
-    {
-      id: 'act-1',
-      username: 'albin_thomas',
-      type: 'started_following_you',
-      timestamp: baseTime - 7200, // 2h ago
-      timeAgo: '2h ago',
-    },
-    {
-      id: 'act-2',
-      username: 'john_doe',
-      type: 'started_following_you',
-      timestamp: baseTime - 86400, // 1d ago
-      timeAgo: '1d ago',
-    },
-    {
-      id: 'act-3',
-      username: 'sarah_jonas',
-      type: 'followed_by_you',
-      timestamp: baseTime - 172800, // 2d ago
-      timeAgo: '2d ago',
-    },
-    {
-      id: 'act-4',
-      username: 'rachel_miller',
-      type: 'unfollowed_you',
-      timestamp: baseTime - 259200, // 3d ago
-      timeAgo: '3d ago',
-    },
-    {
-      id: 'act-5',
-      username: 'david_lee',
-      type: 'started_following_you',
-      timestamp: baseTime - 345600, // 4d ago
-      timeAgo: '4d ago',
-    },
+    { id: 'a1', username: 'cosmic_jay',   type: 'started_following_you', timestamp: base - 86400,      timeAgo: '1d ago' },
+    { id: 'a2', username: 'nova_pixel',   type: 'started_following_you', timestamp: base - 86400 * 2,  timeAgo: '2d ago' },
+    { id: 'a3', username: 'sunny_dev',    type: 'followed_by_you',       timestamp: base - 86400 * 3,  timeAgo: '3d ago' },
+    { id: 'a4', username: 'loop_theory',  type: 'started_following_you', timestamp: base - 86400 * 4,  timeAgo: '4d ago' },
+    { id: 'a5', username: 'bright_lens',  type: 'unfollowed_you',        timestamp: base - 86400 * 5,  timeAgo: '5d ago' },
+    { id: 'a6', username: 'wave_studio',  type: 'followed_by_you',       timestamp: base - 86400 * 7,  timeAgo: '7d ago' },
   ];
 
   return {
     fileName,
-    fileSize: isMay ? '1.8 MB' : '1.9 MB',
+    fileSize: isMay ? '0.1 MB' : '0.1 MB',
     exportedAt,
     followers,
     following,
@@ -454,46 +383,21 @@ export function generateMockExport(type: 'may' | 'june'): ParsedExport {
   };
 }
 
-// Generate comparison result between May and June
+// Generate comparison result between two exports
 export function getComparison(exportA: ParsedExport, exportB: ParsedExport): ComparisonResult {
-  // We compare A (older) and B (newer)
   const setA_followers = new Set(exportA.followers.map(u => u.username));
   const setB_followers = new Set(exportB.followers.map(u => u.username));
-
   const setA_following = new Set(exportA.following.map(u => u.username));
   const setB_following = new Set(exportB.following.map(u => u.username));
-
-  // New followers: present in B, not in A
-  const newFollowers = exportB.followers.filter(u => !setA_followers.has(u.username));
-
-  // Lost followers: present in A, not in B
-  const lostFollowers = exportA.followers.filter(u => !setB_followers.has(u.username));
-
-  // New following: present in B following, not in A
-  const newFollowing = exportB.following.filter(u => !setA_following.has(u.username));
-
-  // Unfollowed accounts (lost following): present in A following, not in B
-  const unfollowed = exportA.following.filter(u => !setB_following.has(u.username));
 
   return {
     fileA: { name: exportA.fileName, date: exportA.exportedAt },
     fileB: { name: exportB.fileName, date: exportB.exportedAt },
-    newFollowers,
-    lostFollowers,
-    newFollowing,
-    unfollowed,
+    newFollowers:  exportB.followers.filter(u => !setA_followers.has(u.username)),
+    lostFollowers: exportA.followers.filter(u => !setB_followers.has(u.username)),
+    newFollowing:  exportB.following.filter(u => !setA_following.has(u.username)),
+    unfollowed:    exportA.following.filter(u => !setB_following.has(u.username)),
   };
 }
 
-const FIRST_NAMES = ['alex', 'jordan', 'taylor', 'morgan', 'casey', 'jamie', 'riley', 'sam', 'skyler', 'stefan', 'elena', 'damon', 'olivia', 'clara', 'noah', 'emma', 'liam', 'sophia', 'mason', 'charlotte', 'lucas', 'mia', 'ethan', 'harper', 'logan'];
-const LAST_NAMES = ['smith', 'jones', 'miller', 'davis', 'garcia', 'rodriguez', 'wilson', 'martinez', 'anderson', 'taylor', 'thomas', 'white', 'harris', 'martin', 'clark', 'lewis', 'robinson', 'walker', 'young', 'allen', 'king', 'wright', 'scott', 'torres'];
-const SEPARATORS = ['_', '.', ''];
 
-function getMockUsername(prefix: string, seed: number): string {
-  // Make beautiful, readable usernames using seed
-  const p1 = FIRST_NAMES[seed % FIRST_NAMES.length];
-  const p2 = LAST_NAMES[(seed + 3) % LAST_NAMES.length];
-  const sep = SEPARATORS[seed % SEPARATORS.length];
-  const num = seed > 30 ? (seed % 99) : '';
-  return `${p1}${sep}${p2}${num}`;
-}

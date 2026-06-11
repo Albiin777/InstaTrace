@@ -19,9 +19,7 @@ export default function Navbar({ onUploadClick, hasExport, onReset, onNavigateSe
           className="flex cursor-pointer items-center space-x-2.5 transition-transform hover:scale-[1.02]"
           id="navbar-logo"
         >
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white shadow-md shadow-pink-100">
-            <Camera className="h-5 w-5" />
-          </div>
+          <img src="/logo.png" alt="InstaTrace" className="h-10 w-10 rounded-xl object-cover shadow-md shadow-pink-100" />
           <span className="text-2xl sm:xl font-bold tracking-tight text-[#111827]">
             Insta<span className="bg-gradient-to-tr from-[#DD2A7B] via-[#8134AF] to-[#515BD4] bg-clip-text text-transparent">Trace</span>
           </span>

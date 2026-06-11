@@ -14,7 +14,7 @@ export default function DataListView({ type, users, onUploadNew }: DataListViewP
   const [sortOption, setSortOption] = useState<'latest' | 'oldest' | 'az' | 'za'>('latest');
   const [currentPage, setCurrentPage] = useState(1);
   const [timeFilter, setTimeFilter] = useState<'all' | 'today' | 'week' | 'month'>('all');
-  
+
   const itemsPerPage = 15;
 
   // Header configs based on dataset key
@@ -83,7 +83,7 @@ export default function DataListView({ type, users, onUploadNew }: DataListViewP
     if (type !== 'recently-followed' || timeFilter === 'all') {
       return users;
     }
-    
+
     const now = Date.now() / 1000; // unix in seconds
     const SECONDS_IN_DAY = 86400;
 
@@ -156,7 +156,7 @@ export default function DataListView({ type, users, onUploadNew }: DataListViewP
 
   return (
     <div id={`${type}-panel`} className="space-y-6">
-      
+
       {/* List Header description container */}
       <div className={`p-6 rounded-3xl border ${config.alertBorder} ${config.alertBg} transition-all`}>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -204,7 +204,7 @@ export default function DataListView({ type, users, onUploadNew }: DataListViewP
 
       {/* Search, Filter & Sort Controls Section */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-white p-4 rounded-2xl border border-[#E5E7EB] shadow-sm">
-        
+
         {/* Search Input */}
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6B7280]" />
@@ -220,7 +220,7 @@ export default function DataListView({ type, users, onUploadNew }: DataListViewP
 
         {/* Filter and Sort operations */}
         <div className="flex flex-wrap items-center gap-3">
-          
+
           {/* Timeframe Period Filter (Only for Recently Followed) */}
           {type === 'recently-followed' && (
             <div className="flex items-center space-x-1.5 bg-[#FAFAFA] p-1.5 rounded-xl border border-[#E5E7EB] text-xs">
@@ -231,11 +231,10 @@ export default function DataListView({ type, users, onUploadNew }: DataListViewP
                 <button
                   key={opt}
                   onClick={() => setTimeFilter(opt)}
-                  className={`px-2.5 py-1 rounded-lg font-semibold capitalize cursor-pointer transition-colors ${
-                    timeFilter === opt
+                  className={`px-2.5 py-1 rounded-lg font-semibold capitalize cursor-pointer transition-colors ${timeFilter === opt
                       ? 'bg-gradient-to-r from-[#F58529] to-[#DD2A7B] text-white shadow-sm'
                       : 'text-[#6B7280] hover:text-[#111827]'
-                  }`}
+                    }`}
                 >
                   {opt === 'all' ? 'All Time' : opt === 'week' ? 'This Week' : opt === 'month' ? 'This Month' : opt}
                 </button>
@@ -275,14 +274,14 @@ export default function DataListView({ type, users, onUploadNew }: DataListViewP
           </p>
         </div>
       ) : type === 'recently-followed' ? (
-        
+
         /* TIMELINE LAYOUT for Recently Followed Page */
         <div className="relative pl-6 border-l border-[#E5E7EB] space-y-5 py-2">
           {paginatedUsers.map((user, idx) => {
             const initial = user.username.slice(0, 2).toUpperCase();
             return (
               <div key={user.username} className="relative flex items-center justify-between group bg-white rounded-2xl border border-[#E5E7EB]/50 hover:bg-[#FAFAFA] p-3.5 transition-all shadow-sm">
-                
+
                 {/* Visual timeline circle dot */}
                 <div className="absolute -left-[29px] top-1/2 -translate-y-1/2 flex h-4 w-4 items-center justify-center rounded-full bg-white border border-[#E5E7EB] group-hover:border-[#DD2A7B] transition-colors">
                   <span className="h-1.5 w-1.5 rounded-full bg-[#E5E7EB] group-hover:bg-[#DD2A7B] transition-colors" />
@@ -309,7 +308,7 @@ export default function DataListView({ type, users, onUploadNew }: DataListViewP
                     rel="noopener noreferrer"
                     className="inline-flex items-center space-x-1 px-3 py-1.5 text-xs font-bold text-white bg-gradient-to-r from-[#F58529] via-[#DD2A7B] to-[#515BD4] hover:opacity-90 active:scale-[0.98] rounded-lg transition-all"
                   >
-                    <span>Inspect</span>
+                    <span>View Profile</span>
                     <ExternalLink className="h-3.5 w-3.5" />
                   </a>
                 </div>
@@ -318,9 +317,9 @@ export default function DataListView({ type, users, onUploadNew }: DataListViewP
             );
           })}
         </div>
-        
+
       ) : (
-        
+
         /* TABLE LAYOUT for standard matching lists */
         <div className="overflow-hidden rounded-2xl border border-[#E5E7EB] bg-white shadow-sm">
           <div className="overflow-x-auto">
@@ -336,20 +335,18 @@ export default function DataListView({ type, users, onUploadNew }: DataListViewP
                 {paginatedUsers.map((user) => {
                   const initial = user.username.slice(0, 2).toUpperCase();
                   return (
-                    <tr 
-                      key={user.username} 
-                      className={`hover:bg-[#FAFAFA]/55 transition-colors ${
-                        type === 'dont-follow-back' ? 'hover:bg-rose-50/10' : ''
-                      }`}
+                    <tr
+                      key={user.username}
+                      className={`hover:bg-[#FAFAFA]/55 transition-colors ${type === 'dont-follow-back' ? 'hover:bg-rose-50/10' : ''
+                        }`}
                     >
                       {/* Left Block: Avatar & Username */}
                       <td className="px-6 py-4.5">
                         <div className="flex items-center space-x-3">
-                          <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-bold font-mono text-xs text-white ${
-                            type === 'dont-follow-back' 
-                              ? 'bg-gradient-to-tr from-[#DD2A7B] via-[#8134AF] to-[#515BD4]' 
+                          <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl font-bold font-mono text-xs text-white ${type === 'dont-follow-back'
+                              ? 'bg-gradient-to-tr from-[#DD2A7B] via-[#8134AF] to-[#515BD4]'
                               : 'bg-gradient-to-r from-[#F58529] to-[#DD2A7B]'
-                          }`}>
+                            }`}>
                             {initial}
                           </div>
                           <div>
@@ -371,11 +368,10 @@ export default function DataListView({ type, users, onUploadNew }: DataListViewP
                           href={user.href}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className={`inline-flex items-center space-x-1.5 px-3.5 py-2 text-xs font-bold rounded-xl transition-all shadow-sm ${
-                            type === 'dont-follow-back'
+                          className={`inline-flex items-center space-x-1.5 px-3.5 py-2 text-xs font-bold rounded-xl transition-all shadow-sm ${type === 'dont-follow-back'
                               ? 'bg-gradient-to-tr from-[#DD2A7B] via-[#8134AF] to-[#515BD4] text-white hover:opacity-95'
                               : 'bg-white border border-[#E5E7EB] text-[#111827] hover:border-black/30'
-                          }`}
+                            }`}
                         >
                           <span>Open Instagram</span>
                           <ExternalLink className="h-3 w-3" />
@@ -396,7 +392,7 @@ export default function DataListView({ type, users, onUploadNew }: DataListViewP
                 <span className="font-bold text-[#111827]">{endIdx}</span> of{' '}
                 <span className="font-extrabold text-[#111827]">{totalItems}</span> accounts
               </span>
-              
+
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}

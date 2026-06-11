@@ -77,13 +77,30 @@ export default function App() {
 
   // Trigger click from overview or tab shortcuts
   const handleTriggerUploadPicker = () => {
-    // Look for file picker either on navbar or landing and trigger it
-    const inputEl = document.getElementById('landing-file-picker') || document.getElementById('compare-file-upload');
-    if (inputEl) {
-      inputEl.click();
+    const globalInput = document.getElementById('global-file-upload');
+    if (globalInput) {
+      globalInput.click();
     } else {
-      // fallback
-      handleReset();
+      // Look for file picker on landing page if global isn't found
+      const inputEl = document.getElementById('landing-file-picker');
+      if (inputEl) {
+        inputEl.click();
+      } else {
+        handleReset();
+      }
+    }
+  };
+
+  const handleGlobalUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      try {
+        await handleMainFileSelect(file);
+      } catch (err: any) {
+        alert(err.message || 'Failed to parse ZIP');
+      }
+      // Reset input value to allow selecting same file again
+      e.target.value = '';
     }
   };
 
@@ -102,6 +119,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white text-[#111827] flex flex-col antialiased">
+      {/* Global Hidden File Input for Replace Active ZIP functionality */}
+      <input
+        id="global-file-upload"
+        type="file"
+        className="hidden"
+        accept=".zip"
+        onChange={handleGlobalUpload}
+      />
 
       {/* 1. Header/Navbar */}
       <Navbar
@@ -571,15 +596,13 @@ export default function App() {
         <div className="absolute -top-24 -left-20 h-48 w-48 rounded-full bg-[#FF7E5F]/5 blur-2xl pointer-events-none" />
         <div className="absolute -bottom-24 -right-20 h-48 w-48 rounded-full bg-[#FEB47B]/10 blur-2xl pointer-events-none" />
 
-        <div className="mx-auto max-w-7xl px-6 py-16 sm:px-8 lg:px-10 relative z-10">
+        <div className="mx-auto max-w-7xl px-6 pt-12 pb-6 sm:py-7 sm:px-8 lg:px-10 relative z-10">
           <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
 
             {/* Left Column: Brand & Copy */}
             <div className="space-y-6 text-left">
               <div className="flex items-center gap-3">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] text-white shadow-md shadow-pink-100 transition-all hover:rotate-6 hover:scale-105 duration-300">
-                  <Camera className="h-7 w-7" />
-                </div>
+                <img src="/logo.png" alt="InstaTrace" className="h-14 w-14 rounded-2xl object-cover shadow-md shadow-pink-100 transition-all hover:rotate-6 hover:scale-105 duration-300" />
                 <div>
                   <h2 className="text-3xl font-bold tracking-tight text-[#111827]">
                     Insta<span className="bg-gradient-to-tr from-[#DD2A7B] via-[#8134AF] to-[#515BD4] bg-clip-text text-transparent">Trace</span>
@@ -606,7 +629,7 @@ export default function App() {
                 <div className="absolute top-0 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-[#FF7E5F]/5 to-[#FEB47B]/10 blur-xl group-hover:scale-110 transition-transform duration-500" />
                 <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#E76F51] mb-2">Our Promise</h3>
                 <p className="text-xs font-semibold text-[#4A3E3D] leading-relaxed">
-                  "Your data never leaves your device. No cloud storage, no hidden trackers—just immediate connection analysis executed directly inside your web browser."
+                  "Your data never leaves your device. No cloud storage, no hidden trackers, just immediate connection analysis executed directly inside your web browser."
                 </p>
               </div>
 
@@ -618,7 +641,7 @@ export default function App() {
           </div>
 
           {/* Bottom attribution row */}
-          <div className="flex flex-col gap-4 text-center sm:flex-row sm:items-center sm:justify-between border-t border-[#F2EFE9] pt-8 mt-12">
+          <div className="flex flex-col gap-3 text-center sm:flex-row sm:items-center sm:justify-between border-t border-[#F2EFE9] pt-6 mt-8 sm:mt-12">
             <p className="text-xs text-[#8C7E7C]">
               © {new Date().getFullYear()} InstaTrace. All rights reserved.
             </p>
