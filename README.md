@@ -162,6 +162,6 @@ This project is **independent** and is not affiliated with, endorsed by, or spon
 
 <div align="center">
 
-Made with ❤️ by [Albin](https://www.albiin.me)
+Created with ❤️ by [Albin](https://www.albiin.me)
 
 </div>
