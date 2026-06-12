@@ -20,6 +20,26 @@ export default function App() {
   const [showMoreDrawer, setShowMoreDrawer] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
 
+  // Scroll to top on tab switch or new upload/demo
+  React.useEffect(() => {
+    const timer = setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [activeTab, currentExport]);
+
+  // Lock background body scrolling when mobile drawer is open
+  React.useEffect(() => {
+    if (showMoreDrawer) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [showMoreDrawer]);
+
   // Smooth scroll logic on landing page
   const handleNavigateSection = (sectionId: string) => {
     const el = document.getElementById(sectionId);
@@ -593,55 +613,59 @@ export default function App() {
       {/* 6. GLOBAL FOOTER */}
       <footer className="mt-auto border-t border-[#F2EFE9] bg-[#FDFBF7] text-[#4A3E3D] relative overflow-hidden">
         {/* Soft decorative gradient background blur */}
-        <div className="absolute -top-24 -left-20 h-48 w-48 rounded-full bg-[#FF7E5F]/5 blur-2xl pointer-events-none" />
-        <div className="absolute -bottom-24 -right-20 h-48 w-48 rounded-full bg-[#FEB47B]/10 blur-2xl pointer-events-none" />
+        {!currentExport && (
+          <>
+            <div className="absolute -top-24 -left-20 h-48 w-48 rounded-full bg-[#FF7E5F]/5 blur-2xl pointer-events-none" />
+            <div className="absolute -bottom-24 -right-20 h-48 w-48 rounded-full bg-[#FEB47B]/10 blur-2xl pointer-events-none" />
+          </>
+        )}
 
-        <div className="mx-auto max-w-7xl px-6 pt-12 pb-6 sm:py-7 sm:px-8 lg:px-10 relative z-10">
-          <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-start">
+        <div className={`mx-auto max-w-7xl px-6 relative z-10 ${!currentExport ? 'pt-12 pb-5 sm:py-7 sm:px-8 lg:px-10' : 'pt-6 pb-24 sm:py-8 sm:px-8 lg:px-10'}`}>
+          {!currentExport && (
+            <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-start mb-12">
 
-            {/* Left Column: Brand & Copy */}
-            <div className="space-y-6 text-left">
-              <div className="flex items-center gap-3">
-                <img src="/logo.png" alt="InstaTrace" className="h-14 w-14 rounded-2xl object-cover shadow-md shadow-pink-100 transition-all hover:rotate-6 hover:scale-105 duration-300" />
-                <div>
-                  <h2 className="text-3xl font-bold tracking-tight text-[#111827]">
-                    Insta<span className="bg-gradient-to-tr from-[#DD2A7B] via-[#8134AF] to-[#515BD4] bg-clip-text text-transparent">Trace</span>
-                  </h2>
+              {/* Left Column: Brand & Copy */}
+              <div className="space-y-6 text-left">
+                <div className="flex items-center gap-3">
+                  <img src="/logo.png" alt="InstaTrace" className="h-14 w-14 rounded-2xl object-cover shadow-md shadow-pink-100 transition-all hover:rotate-6 hover:scale-105 duration-300" />
+                  <div>
+                    <h2 className="text-3xl font-bold tracking-tight text-[#111827]">
+                      Insta<span className="bg-gradient-to-tr from-[#DD2A7B] via-[#8134AF] to-[#515BD4] bg-clip-text text-transparent">Trace</span>
+                    </h2>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <p className="text-xl font-bold leading-snug text-[#2C2520] max-w-xl">
+                    A privacy-focused tool for exploring your Instagram connections.
+                  </p>
+                  <p className="text-sm leading-relaxed text-[#6B5E5C] max-w-xl">
+                    Discover followers, following, mutuals, unfollowers, and account activity from your Instagram export with a clean and intuitive experience.
+                  </p>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                <p className="text-xl font-bold leading-snug text-[#2C2520] max-w-xl">
-                  A privacy-focused tool for exploring your Instagram connections.
-                </p>
-                <p className="text-sm leading-relaxed text-[#6B5E5C] max-w-xl">
-                  Discover followers, following, mutuals, unfollowers, and account activity from your Instagram export with a clean and intuitive experience.
-                </p>
-              </div>
+              {/* Right Column: Card & Legal Disclaimer */}
+              <div className="space-y-6 lg:mt-2">
+                {/* Unique Philosophy Card */}
+                <div className="rounded-3xl border border-[#F2EFE9] bg-white/70 backdrop-blur-xs p-6 shadow-xs hover:shadow-md hover:border-[#FF7E5F]/30 transition-all duration-300 relative overflow-hidden group">
+                  <div className="absolute top-0 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-[#FF7E5F]/5 to-[#FEB47B]/10 blur-xl group-hover:scale-110 transition-transform duration-500" />
+                  <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#E76F51] mb-2">Our Promise</h3>
+                  <p className="text-xs font-semibold text-[#4A3E3D] leading-relaxed">
+                    "Your data never leaves your device. No cloud storage, no hidden trackers, just immediate connection analysis executed directly inside your web browser."
+                  </p>
+                </div>
 
-
-            </div>
-
-            {/* Right Column: Card & Legal Disclaimer */}
-            <div className="space-y-6 lg:mt-2">
-              {/* Unique Philosophy Card */}
-              <div className="rounded-3xl border border-[#F2EFE9] bg-white/70 backdrop-blur-xs p-6 shadow-xs hover:shadow-md hover:border-[#FF7E5F]/30 transition-all duration-300 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-[#FF7E5F]/5 to-[#FEB47B]/10 blur-xl group-hover:scale-110 transition-transform duration-500" />
-                <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#E76F51] mb-2">Our Promise</h3>
-                <p className="text-xs font-semibold text-[#4A3E3D] leading-relaxed">
-                  "Your data never leaves your device. No cloud storage, no hidden trackers, just immediate connection analysis executed directly inside your web browser."
+                <p className="text-[11px] leading-relaxed text-[#8C7E7C] max-w-lg">
+                  This project is independent and is not affiliated with, endorsed by, or sponsored by Instagram or Meta Platforms, Inc.
                 </p>
               </div>
 
-              <p className="text-[11px] leading-relaxed text-[#8C7E7C] max-w-lg">
-                This project is independent and is not affiliated with, endorsed by, or sponsored by Instagram or Meta Platforms, Inc.
-              </p>
             </div>
-
-          </div>
+          )}
 
           {/* Bottom attribution row */}
-          <div className="flex flex-col gap-3 text-center sm:flex-row sm:items-center sm:justify-between border-t border-[#F2EFE9] pt-6 mt-8 sm:mt-12">
+          <div className={`flex flex-col gap-3 text-center sm:flex-row sm:items-center sm:justify-between ${!currentExport ? 'border-t border-[#F2EFE9] pt-6' : ''}`}>
             <p className="text-xs text-[#8C7E7C]">
               © {new Date().getFullYear()} InstaTrace. All rights reserved.
             </p>
