@@ -65,7 +65,7 @@ export default function HowToGuide() {
   };
 
   return (
-    <div className="rounded-3xl border border-[#E5E7EB] bg-[#FAFAFA] p-6 sm:p-8 lg:p-10 shadow-sm" id="how-to-get-data">
+    <div className="scroll-reveal rounded-3xl border border-[#E5E7EB] bg-[#FAFAFA] p-6 sm:p-8 lg:p-10 shadow-sm" id="how-to-get-data">
       <div className="mb-8">
         <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-full bg-orange-50 text-xs font-semibold text-[#F58529] border border-orange-100">
           <HelpCircle className="h-3 w-3" />
@@ -90,7 +90,7 @@ export default function HowToGuide() {
       {/* Desktop Timeline Layout (Always visible and beautiful on larger screens) */}
       <div className="hidden md:block relative pl-8 border-l-2 border-[#E5E7EB] space-y-8">
         {steps.map((step, idx) => (
-          <div key={idx} className="relative group" id={`desktop-step-${step.number}`}>
+          <div key={idx} className="relative group scroll-reveal" id={`desktop-step-${step.number}`}>
             {/* Timeline Number indicator */}
             <div className="absolute -left-[45px] top-0 flex h-7 w-7 items-center justify-center rounded-full bg-white border-2 border-[#E5E7EB] text-xs font-bold text-[#6B7280] group-hover:border-[#DD2A7B] group-hover:text-[#DD2A7B] transition-colors shadow-sm">
               {step.number}
@@ -157,7 +157,7 @@ export default function HowToGuide() {
         })}
       </div>
 
-      <div className="mt-8 flex flex-col sm:flex-row items-center justify-between border-t border-[#E5E7EB] pt-6 gap-3">
+      <div className="scroll-reveal mt-8 flex flex-col sm:flex-row items-center justify-between border-t border-[#E5E7EB] pt-6 gap-3">
         <span className="text-xs text-[#6B7280] flex items-center">
           <Check className="h-3.5 w-3.5 text-emerald-500 mr-1.5" />
           Supports official Meta account formats (.zip containing connection .json)

@@ -158,7 +158,7 @@ export default function App() {
 
       {/* 2. Main Body rendering */}
       {!currentExport ? (
-        <main className="flex-1">
+        <main className="flex-1 animate-fade-in" key="landing">
           <LandingPage
             onFileSelect={handleMainFileSelect}
             onLoadDemo={handleLoadDemoArchive}
@@ -167,7 +167,7 @@ export default function App() {
       ) : (
 
         /* 3. DASHBOARD MAIN VIEWPORT */
-        <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 sm:pb-8">
+        <div className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 pb-24 sm:pb-8 animate-fade-in" key="dashboard">
 
           {/* Header block for current archive name */}
           <div className="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-[#E5E7EB] pb-4 gap-2">
@@ -289,69 +289,71 @@ export default function App() {
             </nav>
           </div>
 
-          {/* Render Active View Tab */}
+          {/* Render Active View Tab with smooth fade transition */}
           <main className="min-h-[50vh]">
-            {activeTab === 'overview' && (
-              <OverviewView
-                data={currentExport}
-                onNavigateTab={(tab) => {
-                  setActiveTab(tab as any);
-                  setShowMoreDrawer(false);
-                }}
-                onUploadClick={handleTriggerUploadPicker}
-              />
-            )}
+            <div key={activeTab} className="animate-fade-in">
+              {activeTab === 'overview' && (
+                <OverviewView
+                  data={currentExport}
+                  onNavigateTab={(tab) => {
+                    setActiveTab(tab as any);
+                    setShowMoreDrawer(false);
+                  }}
+                  onUploadClick={handleTriggerUploadPicker}
+                />
+              )}
 
-            {activeTab === 'followers' && (
-              <DataListView
-                type="followers"
-                users={currentExport.followers}
-              />
-            )}
+              {activeTab === 'followers' && (
+                <DataListView
+                  type="followers"
+                  users={currentExport.followers}
+                />
+              )}
 
-            {activeTab === 'following' && (
-              <DataListView
-                type="following"
-                users={currentExport.following}
-              />
-            )}
+              {activeTab === 'following' && (
+                <DataListView
+                  type="following"
+                  users={currentExport.following}
+                />
+              )}
 
-            {activeTab === 'mutuals' && (
-              <DataListView
-                type="mutuals"
-                users={currentExport.mutuals}
-              />
-            )}
+              {activeTab === 'mutuals' && (
+                <DataListView
+                  type="mutuals"
+                  users={currentExport.mutuals}
+                />
+              )}
 
-            {activeTab === 'dont-follow-back' && (
-              <DataListView
-                type="dont-follow-back"
-                users={currentExport.dontFollowBack}
-              />
-            )}
+              {activeTab === 'dont-follow-back' && (
+                <DataListView
+                  type="dont-follow-back"
+                  users={currentExport.dontFollowBack}
+                />
+              )}
 
-            {activeTab === 'fans' && (
-              <DataListView
-                type="fans"
-                users={currentExport.fans}
-              />
-            )}
+              {activeTab === 'fans' && (
+                <DataListView
+                  type="fans"
+                  users={currentExport.fans}
+                />
+              )}
 
-            {activeTab === 'recently-followed' && (
-              <DataListView
-                type="recently-followed"
-                users={currentExport.followers} // Can analyze followers as representative connections
-              />
-            )}
+              {activeTab === 'recently-followed' && (
+                <DataListView
+                  type="recently-followed"
+                  users={currentExport.followers} // Can analyze followers as representative connections
+                />
+              )}
 
-            {activeTab === 'compare' && (
-              <CompareView
-                currentExport={currentExport}
-                onCompareFileSelect={handleCompareFileSelect}
-                compareData={compareData}
-                onSetCompareActive={setCompareData}
-              />
-            )}
+              {activeTab === 'compare' && (
+                <CompareView
+                  currentExport={currentExport}
+                  onCompareFileSelect={handleCompareFileSelect}
+                  compareData={compareData}
+                  onSetCompareActive={setCompareData}
+                />
+              )}
+            </div>
           </main>
 
         </div>
@@ -625,7 +627,7 @@ export default function App() {
             <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:items-start mb-12">
 
               {/* Left Column: Brand & Copy */}
-              <div className="space-y-6 text-left">
+              <div className="space-y-6 text-left scroll-reveal">
                 <div className="flex items-center gap-3">
                   <img src="/logo.png" alt="InstaTrace" className="h-14 w-14 rounded-2xl object-cover shadow-md shadow-pink-100 transition-all hover:rotate-6 hover:scale-105 duration-300" />
                   <div>
@@ -646,7 +648,7 @@ export default function App() {
               </div>
 
               {/* Right Column: Card & Legal Disclaimer */}
-              <div className="space-y-6 lg:mt-2">
+              <div className="space-y-6 lg:mt-2 scroll-reveal">
                 {/* Unique Philosophy Card */}
                 <div className="rounded-3xl border border-[#F2EFE9] bg-white/70 backdrop-blur-xs p-6 shadow-xs hover:shadow-md hover:border-[#FF7E5F]/30 transition-all duration-300 relative overflow-hidden group">
                   <div className="absolute top-0 right-0 h-24 w-24 rounded-full bg-gradient-to-br from-[#FF7E5F]/5 to-[#FEB47B]/10 blur-xl group-hover:scale-110 transition-transform duration-500" />
@@ -665,7 +667,7 @@ export default function App() {
           )}
 
           {/* Bottom attribution row */}
-          <div className={`flex flex-col gap-3 text-center sm:flex-row sm:items-center sm:justify-between ${!currentExport ? 'border-t border-[#F2EFE9] pt-6' : ''}`}>
+          <div className={`scroll-reveal flex flex-col gap-3 text-center sm:flex-row sm:items-center sm:justify-between ${!currentExport ? 'border-t border-[#F2EFE9] pt-6' : ''}`}>
             <p className="text-xs text-[#8C7E7C]">
               © {new Date().getFullYear()} InstaTrace. All rights reserved.
             </p>

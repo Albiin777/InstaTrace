@@ -7,21 +7,21 @@
 
 /* Custom premium transitions and keyframes for client-side interactivity */
 .animate-fade-in {
-  animation: fadeInKey 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeInKey 0.42s cubic-bezier(0.21, 1.02, 0.43, 1.01) forwards;
 }
 
 .animate-slide-up {
-  animation: slideUpKey 0.36s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: slideUpKey 0.42s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @keyframes fadeInKey {
   from {
     opacity: 0;
-    transform: scale(0.99);
+    transform: translateY(6px);
   }
   to {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(0);
   }
 }
 
@@ -56,3 +56,25 @@ button, select, input {
     box-shadow: 0 0 0 0 rgba(221, 42, 123, 0);
   }
 }
+
+/* Scroll reveal styles with premium slide-up transitions */
+.scroll-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.65s cubic-bezier(0.21, 1.02, 0.43, 1.01), transform 0.65s cubic-bezier(0.21, 1.02, 0.43, 1.01);
+}
+
+.scroll-reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Stagger transition delays for grid elements */
+.scroll-reveal.visible:nth-child(1) { transition-delay: 40ms; }
+.scroll-reveal.visible:nth-child(2) { transition-delay: 80ms; }
+.scroll-reveal.visible:nth-child(3) { transition-delay: 120ms; }
+.scroll-reveal.visible:nth-child(4) { transition-delay: 160ms; }
+.scroll-reveal.visible:nth-child(5) { transition-delay: 200ms; }
+.scroll-reveal.visible:nth-child(6) { transition-delay: 240ms; }
+.scroll-reveal.visible:nth-child(7) { transition-delay: 280ms; }
+.scroll-reveal.visible:nth-child(8) { transition-delay: 320ms; }

@@ -55,6 +55,26 @@ export default function LandingPage({ onFileSelect, onLoadDemo }: LandingPagePro
     }
   };
 
+  // Setup IntersectionObserver for scroll-reveal animations
+  React.useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.08 }
+    );
+
+    const elements = document.querySelectorAll('.scroll-reveal');
+    elements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="bg-white min-h-screen font-sans" id="landing-page-root">
       
@@ -72,21 +92,32 @@ export default function LandingPage({ onFileSelect, onLoadDemo }: LandingPagePro
             <span>100% Private! Data never leaves your device</span>
           </div>
 
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-[#111827] leading-none" id="hero-title">
+          <h1 
+            className="text-4xl sm:text-6xl font-extrabold tracking-tight text-[#111827] leading-none animate-fade-in opacity-0"
+            style={{ animationDelay: '100ms', animationFillMode: 'both' }}
+            id="hero-title"
+          >
             Understand Your <br />
             <span className="bg-gradient-to-r from-[#F58529] via-[#DD2A7B] to-[#8134AF] bg-clip-text text-transparent">
               Instagram Connections
             </span>
           </h1>
 
-          <p className="text-base sm:text-md text-[#6B7280] max-w-2xl mx-auto leading-relaxed">
+          <p 
+            className="text-base sm:text-md text-[#6B7280] max-w-2xl mx-auto leading-relaxed animate-fade-in opacity-0"
+            style={{ animationDelay: '200ms', animationFillMode: 'both' }}
+          >
             Upload your Instagram export ZIP file and discover followers, following, mutuals, unfollowers, fans, and account growth metrics. No login credentials required.
           </p>
         </div>
 
         {/* UPLOAD CARD AREA */}
-        <div className="mt-12 max-w-xl mx-auto" id="upload-card-wrapper">
-          <div className="rounded-3xl border border-[#E5E7EB] bg-white p-2.5 shadow-xl shadow-pink-50/50">
+        <div 
+          className="mt-12 max-w-xl mx-auto animate-fade-in opacity-0" 
+          style={{ animationDelay: '300ms', animationFillMode: 'both' }}
+          id="upload-card-wrapper"
+        >
+          <div className="rounded-3xl border border-[#E5E7EB] bg-white p-2.5 shadow-xl shadow-pink-50/50 hover:shadow-2xl transition-all duration-500">
             
             {/* Inner drag drop zone */}
             <form
@@ -94,10 +125,10 @@ export default function LandingPage({ onFileSelect, onLoadDemo }: LandingPagePro
               onDragOver={handleDrag}
               onDragLeave={handleDrag}
               onDrop={handleDrop}
-              className={`rounded-[22px] border-2 border-dashed p-8 text-center transition-all ${
+              className={`rounded-[22px] border-2 border-dashed p-8 text-center transition-all duration-300 ease-out ${
                 dragActive 
-                  ? 'border-[#DD2A7B] bg-pink-50/20' 
-                  : 'border-[#E5E7EB] bg-[#FAFAFA] hover:border-black/20'
+                  ? 'border-[#DD2A7B] bg-pink-50/20 scale-[0.99] shadow-inner' 
+                  : 'border-[#E5E7EB] bg-[#FAFAFA] hover:border-slate-400 hover:bg-slate-50/30'
               }`}
             >
               <input
@@ -189,7 +220,7 @@ export default function LandingPage({ onFileSelect, onLoadDemo }: LandingPagePro
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6" id="features-list-grid">
             
             {/* Followers Card */}
-            <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:border-[#DD2A7B]/40 transition-all shadow-sm">
+            <div className="scroll-reveal bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:border-[#DD2A7B]/60 hover:-translate-y-1 hover:shadow-md transition-all duration-300 shadow-sm">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-[#F58529] to-[#DD2A7B] text-white mb-4">
                 <Users className="h-5 w-5" />
               </div>
@@ -200,7 +231,7 @@ export default function LandingPage({ onFileSelect, onLoadDemo }: LandingPagePro
             </div>
 
             {/* Following Card */}
-            <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:border-[#8134AF]/40 transition-all shadow-sm">
+            <div className="scroll-reveal bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:border-[#8134AF]/60 hover:-translate-y-1 hover:shadow-md transition-all duration-300 shadow-sm">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-[#DD2A7B] to-[#8134AF] text-white mb-4">
                 <Heart className="h-5 w-5" />
               </div>
@@ -211,7 +242,7 @@ export default function LandingPage({ onFileSelect, onLoadDemo }: LandingPagePro
             </div>
 
             {/* Mutuals Card */}
-            <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:border-orange-400/40 transition-all shadow-sm">
+            <div className="scroll-reveal bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:border-orange-400/65 hover:-translate-y-1 hover:shadow-md transition-all duration-300 shadow-sm">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-[#F58529] to-[#DD2A7B] text-white mb-4">
                 <Heart className="h-5 w-5 fill-white" />
               </div>
@@ -222,7 +253,7 @@ export default function LandingPage({ onFileSelect, onLoadDemo }: LandingPagePro
             </div>
 
             {/* Don't Follow Back Card */}
-            <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:border-[#DD2A7B]/40 transition-all shadow-sm">
+            <div className="scroll-reveal bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:border-[#DD2A7B]/60 hover:-translate-y-1 hover:shadow-md transition-all duration-300 shadow-sm">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-tr from-[#F58529] to-[#DD2A7B] text-white mb-4">
                 <UserPlus className="h-5 w-5 rotate-180" />
               </div>
@@ -233,7 +264,7 @@ export default function LandingPage({ onFileSelect, onLoadDemo }: LandingPagePro
             </div>
 
             {/* Fans Card */}
-            <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:border-[#8134AF]/40 transition-all shadow-sm">
+            <div className="scroll-reveal bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:border-[#8134AF]/60 hover:-translate-y-1 hover:shadow-md transition-all duration-300 shadow-sm">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 mb-4">
                 <EyeOff className="h-5 w-5" />
               </div>
@@ -244,7 +275,7 @@ export default function LandingPage({ onFileSelect, onLoadDemo }: LandingPagePro
             </div>
 
             {/* Recently Followed Card */}
-            <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:border-amber-400/40 transition-all shadow-sm">
+            <div className="scroll-reveal bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:border-amber-400/60 hover:-translate-y-1 hover:shadow-md transition-all duration-300 shadow-sm">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600 mb-4">
                 <Calendar className="h-5 w-5" />
               </div>
@@ -255,7 +286,7 @@ export default function LandingPage({ onFileSelect, onLoadDemo }: LandingPagePro
             </div>
 
             {/* Compare Exports Card */}
-            <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:border-emerald-400/40 transition-all shadow-sm">
+            <div className="scroll-reveal bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:border-emerald-400/60 hover:-translate-y-1 hover:shadow-md transition-all duration-300 shadow-sm">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-50 text-emerald-650 mb-4">
                 <RefreshCw className="h-5 w-5" />
               </div>
@@ -266,7 +297,7 @@ export default function LandingPage({ onFileSelect, onLoadDemo }: LandingPagePro
             </div>
 
             {/* Export CSV Card */}
-            <div className="bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:border-neutral-400/40 transition-all shadow-sm">
+            <div className="scroll-reveal bg-white rounded-2xl border border-[#E5E7EB] p-6 hover:border-neutral-400/60 hover:-translate-y-1 hover:shadow-md transition-all duration-300 shadow-sm">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-gray-700 mb-4">
                 <Download className="h-5 w-5" />
               </div>
@@ -288,7 +319,7 @@ export default function LandingPage({ onFileSelect, onLoadDemo }: LandingPagePro
 
       {/* 4. PRIVACY SECTION DETAILS */}
       <section id="privacy" className="bg-[#FAFAFA] border-y border-[#E5E7EB] py-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto text-center space-y-6">
+        <div className="scroll-reveal max-w-4xl mx-auto text-center space-y-6">
           <div className="h-14 w-14 bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF] rounded-3xl mx-auto flex items-center justify-center text-white shadow-lg shadow-pink-100">
             <ShieldCheck className="h-8 w-8" />
           </div>
